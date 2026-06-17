@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Kick Deleted Messages",
+  "version": "1.0.0",
+  "description": "Shows messages deleted by moderation on Kick.com",
+  "permissions": [],
+  "host_permissions": ["https://kick.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://kick.com/*"],
+      "js": ["src/content.js"],
+      "css": ["src/styles.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
