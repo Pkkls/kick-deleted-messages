@@ -72,6 +72,9 @@
     const header = document.createElement('button');
     header.type = 'button';
     header.className = 'kdm-panel-header';
+    header.title =
+      'Messages deleted by moderators, captured live on this channel.\n' +
+      'Click to expand/collapse · drag to move.';
     const label = document.createElement('span');
     label.className = 'kdm-panel-label';
     label.textContent = 'Deleted messages';
