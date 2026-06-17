@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        width: 240px;
+        margin: 0;
+        padding: 12px 14px;
+        font: 13px/1.4 system-ui, sans-serif;
+        color: #eee;
+        background: #18181b;
+      }
+      h1 {
+        margin: 0 0 10px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #e74c3c;
+      }
+      label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+      .hint {
+        margin: 8px 0 0;
+        font-size: 11px;
+        color: #999;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Kick Deleted Messages</h1>
+    <label>
+      <input type="checkbox" id="panel" />
+      Show the floating "Deleted messages" panel
+    </label>
+    <p class="hint">Inline restoration in chat stays on regardless of this setting.</p>
+    <script src="popup.js"></script>
+  </body>
+</html>

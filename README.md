@@ -12,7 +12,8 @@ It restores the message **two ways at once**:
   naturally with the chat.
 - **Floating panel** — a small draggable pill docked to the chat corner collects
   every deletion it sees. Click to expand the full list; drag the header to move it
-  (position is remembered).
+  (position is remembered). It can be turned off from the extension popup (click the
+  toolbar icon); inline restoration stays on regardless.
 
 ## Install (unpacked)
 
@@ -20,8 +21,9 @@ It restores the message **two ways at once**:
 2. **Load unpacked** → select this folder.
 3. Open any `kick.com` channel.
 
-No permissions are requested beyond `https://kick.com/*` host access. No network
-calls, no storage of anything other than the panel's position (`localStorage`).
+No network calls. Permissions: `https://kick.com/*` host access and `storage` (used
+only to remember the panel on/off toggle; the panel's drag position is kept in the
+page's `localStorage`).
 
 ## How it works
 
@@ -63,7 +65,9 @@ These are inherent to the approach and cannot be worked around from a content sc
 ## Files
 
 ```
-manifest.json     MV3 manifest (single content script + CSS)
+manifest.json     MV3 manifest (content script + CSS + popup)
 src/content.js    capture, detection, inline restore, panel
 src/styles.css    inline + panel styling
+src/popup.html    toolbar popup (panel on/off toggle)
+src/popup.js      reads/writes the toggle via chrome.storage
 ```

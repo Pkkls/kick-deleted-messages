@@ -27,6 +27,11 @@
   const handledRows = new WeakSet();
   let chatRoot = null;
 
+  // Whether the floating panel is shown (popup toggle). Inline restoration is
+  // always on. Default enabled.
+  const SHOW_PANEL_KEY = 'kdm.showPanel';
+  let showPanel = true;
+
   const DELETION_RE =
     /(deleted by a moderator|message deleted|removed by a moderator|deleted by the broadcaster)/i;
 
@@ -72,9 +77,6 @@
     const header = document.createElement('button');
     header.type = 'button';
     header.className = 'kdm-panel-header';
-    header.title =
-      'Messages deleted by moderators, captured live on this channel.\n' +
-      'Click to expand/collapse · drag to move.';
     const label = document.createElement('span');
     label.className = 'kdm-panel-label';
     label.textContent = 'Deleted messages';
@@ -188,6 +190,7 @@
   }
 
   function addToPanel(clone) {
+    if (!showPanel) return;
     ensurePanel();
     const item = document.createElement('div');
     item.className = 'kdm-item';
@@ -300,6 +303,26 @@
   });
 
   observer.observe(document, { childList: true, subtree: true, characterData: true });
+
+  // Panel toggle: read setting, then react to changes from the popup without reload.
+  try {
+    chrome.storage.local.get(SHOW_PANEL_KEY, (r) => {
+      showPanel = r[SHOW_PANEL_KEY] !== false;
+    });
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area !== 'local' || !changes[SHOW_PANEL_KEY]) return;
+      showPanel = changes[SHOW_PANEL_KEY].newValue !== false;
+      if (!showPanel && panelEl) {
+        panelEl.remove();
+        panelEl = null;
+        listEl = null;
+        countEl = null;
+        count = 0;
+      }
+    });
+  } catch {
+    /* chrome.storage unavailable — panel just stays enabled */
+  }
 
   chatRoot = findChatRoot();
   for (const row of document.querySelectorAll('[data-index]')) captureRow(row);
