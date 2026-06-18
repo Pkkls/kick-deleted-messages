@@ -2,6 +2,10 @@
    covers the live chat; expands on click. Sits outside the virtuoso scroller, so
    scrolling chat can't paint over it. */
 
+.kdm-panel.kdm-hidden {
+  display: none;
+}
+
 .kdm-panel {
   position: absolute;
   right: 10px;

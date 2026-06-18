@@ -71,7 +71,7 @@
     }
 
     panelEl = document.createElement('div');
-    panelEl.className = 'kdm-panel kdm-collapsed';
+    panelEl.className = 'kdm-panel kdm-collapsed' + (showPanel ? '' : ' kdm-hidden');
     panelEl.setAttribute('data-kdm-injected', '1');
 
     const header = document.createElement('button');
@@ -189,8 +189,13 @@
     el.removeAttribute('data-kt-id');
   }
 
+  function applyPanelVisibility() {
+    if (panelEl) panelEl.classList.toggle('kdm-hidden', !showPanel);
+  }
+
+  // Always accumulate deletions for the whole session, even while hidden, so toggling
+  // the panel back on shows the full history (capped) rather than rebuilding empty.
   function addToPanel(clone) {
-    if (!showPanel) return;
     ensurePanel();
     const item = document.createElement('div');
     item.className = 'kdm-item';
@@ -305,20 +310,17 @@
   observer.observe(document, { childList: true, subtree: true, characterData: true });
 
   // Panel toggle: read setting, then react to changes from the popup without reload.
+  // Toggling only flips visibility — the panel and its session history are kept in
+  // memory (not rebuilt), so re-enabling shows everything captured this session.
   try {
     chrome.storage.local.get(SHOW_PANEL_KEY, (r) => {
       showPanel = r[SHOW_PANEL_KEY] !== false;
+      applyPanelVisibility();
     });
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area !== 'local' || !changes[SHOW_PANEL_KEY]) return;
       showPanel = changes[SHOW_PANEL_KEY].newValue !== false;
-      if (!showPanel && panelEl) {
-        panelEl.remove();
-        panelEl = null;
-        listEl = null;
-        countEl = null;
-        count = 0;
-      }
+      applyPanelVisibility();
     });
   } catch {
     /* chrome.storage unavailable — panel just stays enabled */

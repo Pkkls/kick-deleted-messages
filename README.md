@@ -62,6 +62,18 @@ These are inherent to the approach and cannot be worked around from a content sc
 - **Manual moderator deletions only.** Detection keys on Kick's English notice
   strings (e.g. "deleted by a moderator").
 
+## Session history & persistence
+
+The panel keeps every deletion captured **for the current session**, in memory.
+Hiding the panel (popup toggle) only hides it — the history is preserved and
+re-appears when you turn it back on, without rebuilding.
+
+That history is **deliberately not persisted**: a page reload, a Kick chat clear, or
+closing the tab wipes it, and nothing is written to durable storage for it. This is a
+conscious trade-off — persisting full message history (content, emotes, authors) would
+consume a meaningful amount of extension storage for little benefit. Only the panel's
+on/off toggle and its drag position are persisted.
+
 ## Files
 
 ```
