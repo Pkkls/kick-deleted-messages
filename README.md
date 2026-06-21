@@ -14,6 +14,9 @@ It restores the message **two ways at once**:
   deletion it sees. Click to expand the full list; drag the header to move it (the
   position is remembered). You can turn it off from the extension popup (click the
   toolbar icon); inline restoration stays on regardless.
+<img width="337" height="500" alt="image" src="https://github.com/user-attachments/assets/16933bb1-79e3-4f4f-8139-c687a3df1723" />
+<img width="217" height="165" alt="image" src="https://github.com/user-attachments/assets/16f0df93-dbdf-484f-9fa6-cce45fe35dbb" />
+<img width="217" height="165" alt="image" src="https://github.com/user-attachments/assets/9b761864-0f4a-4747-bdbf-5a7007a69c43" />
 
 ## Install (unpacked)
 
