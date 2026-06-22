@@ -25,7 +25,6 @@
 
   const liveClones = new WeakMap(); // row node -> clone of its last good content
   const handledRows = new WeakSet();
-  let chatRoot = null;
 
   // Whether the floating panel is shown (popup toggle). Inline restoration is
   // always on. Default enabled.
@@ -51,10 +50,6 @@
     return null;
   }
 
-  function findChatRoot() {
-    return document.querySelector('#channel-chatroom');
-  }
-
   // ── Panel ─────────────────────────────────────────────────────────────────────
 
   let panelEl = null;
@@ -64,11 +59,11 @@
 
   function ensurePanel() {
     if (panelEl && panelEl.isConnected) return panelEl;
-    const host = chatRoot || findChatRoot() || document.body;
-    // Anchor the absolutely-positioned panel to the chat box.
-    if (host !== document.body && getComputedStyle(host).position === 'static') {
-      host.style.position = 'relative';
-    }
+    // Attach to <body>, not the chat box: #channel-chatroom is its own stacking
+    // context, so a panel inside it can never paint above Kick's own overlays
+    // (pin tooltip, etc.) no matter how high its z-index. position: fixed at the
+    // root stacking context is the only thing that actually wins.
+    const host = document.body;
 
     panelEl = document.createElement('div');
     panelEl.className = 'kdm-panel kdm-collapsed' + (showPanel ? '' : ' kdm-hidden');
@@ -91,15 +86,15 @@
 
     panelEl.append(header, listEl);
     host.appendChild(panelEl);
-    makeDraggable(panelEl, header, host);
+    makeDraggable(panelEl, header);
     return panelEl;
   }
 
   // Drag the panel by its header. A click that doesn't move toggles collapse; a drag
-  // repositions and is persisted. Position is stored relative to the chat box.
+  // repositions and is persisted. Position is in viewport coordinates (panel is fixed).
   const POS_KEY = 'kdm.panelPos';
 
-  function makeDraggable(panel, handle, host) {
+  function makeDraggable(panel, handle) {
     // Restore saved position.
     try {
       const saved = JSON.parse(localStorage.getItem(POS_KEY) || 'null');
@@ -124,9 +119,8 @@
       const dy = e.clientY - startY;
       if (!moved && Math.abs(dx) + Math.abs(dy) < 4) return;
       moved = true;
-      const hostRect = host.getBoundingClientRect();
-      const maxLeft = Math.max(0, hostRect.width - panel.offsetWidth);
-      const maxTop = Math.max(0, hostRect.height - panel.offsetHeight);
+      const maxLeft = Math.max(0, window.innerWidth - panel.offsetWidth);
+      const maxTop = Math.max(0, window.innerHeight - panel.offsetHeight);
       const left = Math.min(Math.max(0, baseLeft + dx), maxLeft);
       const top = Math.min(Math.max(0, baseTop + dy), maxTop);
       panel.style.left = left + 'px';
@@ -154,11 +148,10 @@
     handle.addEventListener('mousedown', (e) => {
       if (e.button !== 0) return;
       const panelRect = panel.getBoundingClientRect();
-      const hostRect = host.getBoundingClientRect();
       startX = e.clientX;
       startY = e.clientY;
-      baseLeft = panelRect.left - hostRect.left;
-      baseTop = panelRect.top - hostRect.top;
+      baseLeft = panelRect.left;
+      baseTop = panelRect.top;
       moved = false;
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onUp);
@@ -253,7 +246,6 @@
   function handleDeleted(row) {
     const clone = liveClones.get(row);
     if (clone) restoreInline(row, clone); // inline: re-appliable on re-render
-    if (row.parentElement) chatRoot = chatRoot || findChatRoot();
     // Panel: once per deletion event for this row.
     if (!handledRows.has(row)) {
       handledRows.add(row);
@@ -326,6 +318,5 @@
     /* chrome.storage unavailable — panel just stays enabled */
   }
 
-  chatRoot = findChatRoot();
   for (const row of document.querySelectorAll('[data-index]')) captureRow(row);
 })();
