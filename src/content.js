@@ -87,7 +87,36 @@
     panelEl.append(header, listEl);
     host.appendChild(panelEl);
     makeDraggable(panelEl, header);
+    makeResizable(panelEl);
     return panelEl;
+  }
+
+  // Persist the size the user drags via the native CSS resize grip, and restore it.
+  // Position is anchored top-left so the bottom-right grip grows the panel naturally.
+  const SIZE_KEY = 'kdm.panelSize';
+
+  function makeResizable(panel) {
+    try {
+      const s = JSON.parse(localStorage.getItem(SIZE_KEY) || 'null');
+      if (s && s.width > 0 && s.height > 0) {
+        panel.style.width = s.width + 'px';
+        panel.style.height = s.height + 'px';
+      }
+    } catch {
+      /* ignore */
+    }
+    const ro = new ResizeObserver(() => {
+      if (panel.classList.contains('kdm-collapsed')) return;
+      try {
+        localStorage.setItem(
+          SIZE_KEY,
+          JSON.stringify({ width: panel.offsetWidth, height: panel.offsetHeight }),
+        );
+      } catch {
+        /* ignore */
+      }
+    });
+    ro.observe(panel);
   }
 
   // Drag the panel by its header. A click that doesn't move toggles collapse; a drag
