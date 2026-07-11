@@ -4,8 +4,8 @@ Chrome extension that restores chat messages deleted by moderators on [kick.com]
 
 <img width="337" height="500" alt="image" src="https://github.com/user-attachments/assets/16933bb1-79e3-4f4f-8139-c687a3df1723" />
 
-**Inline** — rewrites Kick's "Deleted by a moderator" placeholder with the original message (`[deleted]`, red border).  
-**Panel** — draggable overlay collecting all deletions this session. Toggle it from the popup; position is remembered.
+**Inline.** Rewrites Kick's "Deleted by a moderator" placeholder with the original message (`[deleted]`, red border).
+**Panel.** Draggable overlay collecting all deletions this session. Toggle it from the popup; position is remembered.
 
 ## Install
 
